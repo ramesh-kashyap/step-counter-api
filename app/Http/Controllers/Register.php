@@ -24,10 +24,9 @@ class Register extends Controller
         try{
             $validation =  Validator::make($request->all(), [
                 'phone' => 'required|unique:users,phone',
-                'password' => 'required|confirmed|min:5',
+                'password' => 'required|confirmed|numeric|digits:4',
                 'sponsor' => 'required|exists:users,username',
-                'email' => 'required|unique:users,email',
-                'code' => 'required',              
+                // 'code' => 'required',              
             ]);
 
             
@@ -43,15 +42,15 @@ class Register extends Controller
             }
             //check if email exist
           
-            $code = $request->code;
-            if (PasswordReset::where('token', $code)->where('email', $request->email)->count() != 1) {
-                // $notify[] = ['error', 'Invalid token'];
-                // return Redirect::back()->withNotify($notify);
-                return response()->json([
-                    'success' => false,
-                    'errors' => 'Invalid token' // Returns all error messages
-                ], 422);
-            }
+            // $code = $request->code;
+            // if (PasswordReset::where('token', $code)->where('email', $request->email)->count() != 1) {
+            //     // $notify[] = ['error', 'Invalid token'];
+            //     // return Redirect::back()->withNotify($notify);
+            //     return response()->json([
+            //         'success' => false,
+            //         'errors' => 'Invalid token' // Returns all error messages
+            //     ], 422);
+            // }
 
             
             $user = User::where('username',$request->sponsor)->first();
@@ -72,7 +71,7 @@ class Register extends Controller
                 //  
             // $data['name'] = $post_array['name'];
             $data['phone'] = $post_array['phone'];
-            $data['email'] = $post_array['email'];
+          
             $data['username'] = $username;
             $data['password'] =   Hash::make($post_array['password']);
             $data['tpassword'] =   Hash::make($tpassword);

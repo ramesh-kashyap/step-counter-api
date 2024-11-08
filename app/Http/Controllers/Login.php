@@ -42,15 +42,14 @@ class Login extends Controller
       
             $validation =  Validator::make($request->all(), [
                 'phone' => 'required|unique:users',
-                'password' => 'required|string',
+                'password' => 'required|numeric',
 
             ]);
         
             
             $post_array  = $request->all();
             $credentials = $request->only('phone', 'password');
-            $exists = User::where('dialCode', $post_array['country_iso']) ->where('phone', $post_array['phone'])
-            ->exists();
+           
             // dd($request->all());
            if (Auth::attempt($credentials)) {
                 $user = Auth::user();
@@ -65,27 +64,20 @@ class Login extends Controller
             ], 422);
             
                 }
-                if( $exists && $exists!=''){
-               
                 return response()->json([
                     'success' => true,
-                    'token' => $token
-                ]);
-            }
-                else{
-                    Auth::logout();
-                    // return Redirect::back()->withErrors(array('Invalid Country Code !'));
-                    return response()->json([
-                        'success' => false,
-                        'errors' => 'Invalid Country Code ' // Returns all error messages
-                    ], 422);
-        
-                }
+                    'message' => 'Login Sucessfully' // Returns all error messages
+                ], 200);
+               
             }
             else
             {
                 // echo "credentials are invalid"; die;
-                return Redirect::back()->withErrors(array('Invalid Username & Password !'));
+                // return Redirect::back()->withErrors(array('Invalid Username & Password !'));
+                return response()->json([
+                    'success' => false,
+                    'errors' => 'Invalid Username & Password !' // Returns all error messages
+                ], 422);
             }
        
         

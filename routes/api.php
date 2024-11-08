@@ -13,8 +13,10 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
+Route::post('/login', [App\Http\Controllers\Login::class, 'login']);
+Route::post('/registers', [App\Http\Controllers\Register::class, 'register']);
 Route::middleware(['auth:sanctum', 'check.app.key'])->get('/protected-data', function (Request $request) {
     return $request->user();
 });
+
 
