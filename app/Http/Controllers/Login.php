@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Models\UserLogin;
 use Helper;
 use DB;
+use Log;
 class Login extends Controller
 {
 
@@ -41,10 +42,20 @@ class Login extends Controller
     {
       
             $validation =  Validator::make($request->all(), [
-                'phone' => 'required|unique:users',
-                'password' => 'required|numeric',
+                'phone' => 'required',
+                'password' => 'required|numeric|digits:4',
 
             ]);
+            if($validation->fails()) {
+
+                Log::info($validation->getMessageBag()->first());
+     
+                // return Redirect::back()->withErrors($validation->getMessageBag()->first())->withInput();
+                return response()->json([
+                    'success' => false,
+                    'errors' => $validation->errors()->first() // Returns all error messages
+                ], 422);
+            }
         
             
             $post_array  = $request->all();

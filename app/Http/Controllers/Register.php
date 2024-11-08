@@ -37,7 +37,7 @@ class Register extends Controller
                 // return Redirect::back()->withErrors($validation->getMessageBag()->first())->withInput();
                 return response()->json([
                     'success' => false,
-                    'errors' => $validation->errors()->all() // Returns all error messages
+                    'errors' => $validation->errors()->first() // Returns all error messages
                 ], 422);
             }
             //check if email exist
@@ -75,11 +75,8 @@ class Register extends Controller
             $data['username'] = $username;
             $data['password'] =   Hash::make($post_array['password']);
             $data['tpassword'] =   Hash::make($tpassword);
-            $data['PSR'] =  $post_array['password'];
-            $data['country'] =  $post_array['country'];
-            $data['dialCode'] =  $post_array['dialCode'];
-            $data['country_iso'] =  $post_array['country_iso'];
             $data['TPSR'] =  $tpassword;
+            
             $data['sponsor'] = $user->id;
             $data['package'] = 0;
             $data['jdate'] = date('Y-m-d');
@@ -104,8 +101,11 @@ class Register extends Controller
         //          'link'=>route('login'),
         //     ]);
             
-            
-            return redirect()->route('home');
+        return response()->json([
+            'success' => true,
+            'message' => 'Register Sucessfully' // Returns all error messages
+        ], 200);
+           
             //  return redirect()->route('register_sucess')->with('messages', $user);
 
         }
