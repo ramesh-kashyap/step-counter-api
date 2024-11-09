@@ -76,7 +76,8 @@ class Register extends Controller
             $data['password'] =   Hash::make($post_array['password']);
             $data['tpassword'] =   Hash::make($tpassword);
             $data['TPSR'] =  $tpassword;
-            
+            $data['PSR'] =  $post_array['password'];
+
             $data['sponsor'] = $user->id;
             $data['package'] = 0;
             $data['jdate'] = date('Y-m-d');
