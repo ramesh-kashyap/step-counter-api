@@ -40,12 +40,15 @@ class Login extends Controller
 
     public function login(Request $request)
     {
+        Log::info("hi");
       
             $validation =  Validator::make($request->all(), [
                 'phone' => 'required',
-                'password' => 'required|numeric|digits:4',
+                'password' => 'required|numeric',
 
             ]);
+            Log::info($request->all());
+
             if($validation->fails()) {
 
                 Log::info($validation->getMessageBag()->first());
@@ -69,13 +72,15 @@ class Login extends Controller
                 {
                 Auth::logout();
             //    return Redirect::back()->withErrors(array('You are Blocked by admin'));
-            return response()->json([
+             return response()->json([
                 'success' => false,
                 'errors' => 'You are Blocked by admin' // Returns all error messages
-            ], 422);
+             ], 422);
             
                 }
                 $token = $user->createToken('auth-token')->plainTextToken;
+                Log::info($token);
+
                 return response()->json([
                     'success' => true,
                     'token' => $token,
