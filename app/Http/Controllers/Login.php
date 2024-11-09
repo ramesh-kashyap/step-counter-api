@@ -75,8 +75,10 @@ class Login extends Controller
              ], 422);
             
                 }
+                $token = $user->createToken('auth-token')->plainTextToken;
                 return response()->json([
                     'success' => true,
+                    'token' => $token,
                     'message' => 'Login Sucessfully' // Returns all error messages
                 ], 200);
                
