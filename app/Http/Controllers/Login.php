@@ -40,12 +40,15 @@ class Login extends Controller
 
     public function login(Request $request)
     {
+        Log::info("hi");
       
             $validation =  Validator::make($request->all(), [
                 'phone' => 'required',
-                'password' => 'required|numeric|digits:4',
+                'password' => 'required|numeric',
 
             ]);
+            Log::info($request->all());
+
             if($validation->fails()) {
 
                 Log::info($validation->getMessageBag()->first());
@@ -76,6 +79,8 @@ class Login extends Controller
             
                 }
                 $token = $user->createToken('auth-token')->plainTextToken;
+                Log::info($token);
+
                 return response()->json([
                     'success' => true,
                     'token' => $token,
