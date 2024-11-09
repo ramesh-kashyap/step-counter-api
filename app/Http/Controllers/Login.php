@@ -154,38 +154,56 @@ class Login extends Controller
     public function forgot_password_submit(Request $request)
     {
          $validation =  Validator::make($request->all(), [
-                
-                'email' => 'required',
-                'code' => 'required',
-                'password' => 'required|confirmed',
+                'phone' => 'required|exists:users,phone',
+                // 'email' => 'required',
+                // 'code' => 'required',
+                'password' => 'required|confirmed|digits:4',
 
             ]);
-            
-        $credentials = User::where('email',$request->email)->first();
+            if($validation->fails()) {
+
+                Log::info($validation->getMessageBag()->first());
+     
+                // return Redirect::back()->withErrors($validation->getMessageBag()->first())->withInput();
+                return response()->json([
+                    'success' => false,
+                    'errors' => $validation->errors()->first() // Returns all error messages
+                ], 422);
+            }
+        $credentials = User::where('phone',$request->phone)->first();
 
         if ($credentials)
         {
 
           
-           $code = $request->code;
+        //    $code = $request->code;
 
           
-            if (PasswordReset::where('token', $code)->where('email', $request->email)->count() != 1) {
-                $notify[] = ['error', 'Invalid token'];
-                return redirect()->route('forgot-password')->withNotify($notify);
-            }
+        //     if (PasswordReset::where('token', $code)->where('email', $request->email)->count() != 1) {
+        //         $notify[] = ['error', 'Invalid token'];
+        //         return redirect()->route('forgot-password')->withNotify($notify);
+        //     }
 
             $password = password_hash($request->password, PASSWORD_DEFAULT);
 
             $credentials->password=$password;
             $credentials->PSR=$request->password;
             $credentials->save();
-            $notify[] = ['success', 'Your Password change Successfully.'];
-            return redirect()->route('login')->withNotify($notify);
+            // $notify[] = ['success', 'Your Password change Successfully.'];
+            // return redirect()->route('login')->withNotify($notify);
+            return response()->json([
+                'success' => true,
+                
+                'message' => 'Your Password change Successfully.' // Returns all error messages
+            ], 200);
         }
         else{
-            $notify[] = ['error', 'Invalid Username '];
-            return redirect()->route('forgot-password')->withNotify($notify);
+            // $notify[] = ['error', 'Invalid Username '];
+            // return redirect()->route('forgot-password')->withNotify($notify);
+            return response()->json([
+                'success' => false,
+                'errors' => 'Invalid Username ' // Returns all error messages
+            ], 422);
         }
 
 
