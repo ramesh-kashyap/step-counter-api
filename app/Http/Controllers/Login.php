@@ -69,10 +69,10 @@ class Login extends Controller
                 {
                 Auth::logout();
             //    return Redirect::back()->withErrors(array('You are Blocked by admin'));
-            return response()->json([
+             return response()->json([
                 'success' => false,
                 'errors' => 'You are Blocked by admin' // Returns all error messages
-            ], 422);
+             ], 422);
             
                 }
                 return response()->json([
