@@ -39,8 +39,9 @@ class stepCount extends Controller
                
             $check_date=Carbon::today()->format('d-m-Y');
                                
-            $match_date =UserStep::where('user_id',1)->get('today');
-          dd(  $match_date);
+            $match_date = UserStep::where('user_id', 1)
+            ->latest('today') // Order by 'today' column in descending order
+            ->value('today');          dd(  $match_date);
                  if($match_date){
                     return response()->json([
                         'success' => false,
