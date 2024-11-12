@@ -20,17 +20,19 @@ Route::any('/forgot_submit', [App\Http\Controllers\Login::class, 'forgot_passwor
 Route::get('/user-inforamtion', [App\Http\Controllers\UserPanel\Profile::class, 'user_info']);
 Route::get('/stepHistory', [App\Http\Controllers\UserPanel\stepCount::class, 'step_history']);
 Route::get('/incomeReport', [App\Http\Controllers\UserPanel\Profile::class, 'income_report']);
+Route::post('/checkPaymentStatus', [App\Http\Controllers\UserPanel\Dashboard::class, 'checkPaymentStatus']);
+Route::any('/dynamicupicallback', [App\Http\Controllers\Cron::class, 'dynamicupicallback']);
+Route::get( '/levelTeam', [App\Http\Controllers\UserPanel\Team::class, 'LevelTeam']);
 
-
+Route::get('/confirmPay', [App\Http\Controllers\UserPanel\Invest::class, 'confirm_pay']);
 Route::middleware(['auth:sanctum', 'check.app.key'])->group(function () {
     // All routes within this group will use the auth:sanctum and check.app.key middleware
 
-    Route::get('/levelTeam', [App\Http\Controllers\UserPanel\Team::class, 'LevelTeam']);
+    
     Route::get('/transactionHistory', [App\Http\Controllers\UserPanel\AddFund::class, 'index']);
     Route::any('/confirmDeposit', [App\Http\Controllers\UserPanel\Invest::class, 'confirmDeposit']);
 Route::post('/WithdrawRequest', [App\Http\Controllers\UserPanel\WithdrawRequest::class, 'WithdrawRequest']);
 Route::post('/edit-password', [App\Http\Controllers\UserPanel\Profile::class, 'change_password_post']);
-Route::get( '/levelTeam', [App\Http\Controllers\UserPanel\Team::class, 'LevelTeam']);
 Route::post('/Step', [App\Http\Controllers\UserPanel\stepCount::class, 'step_count']);
 
 });

@@ -51,7 +51,8 @@ class Register extends Controller
             //         'errors' => 'Invalid token' // Returns all error messages
             //     ], 422);
             // }
-
+        //     $number=$request->phone;
+        //    $this->SendSMS($number,$otp);
             
             $user = User::where('username',$request->sponsor)->first();
             if(!$user)
@@ -130,10 +131,68 @@ class Register extends Controller
           
     } 
     
+    public function sendCodephone(Request $request)
+    {
+
+        $code = verificationCode(6);
+      
+        $emailId = $request->emailId;
+        if ($emailId!="") 
+        {
+          $emailId = $emailId;
+        }
+      
+       
+        PasswordReset::where('email', $emailId)->delete();
+
+        $password = new PasswordReset();
+        $password->email = $emailId;
+        $password->token = $code;
+        $password->created_at = \Carbon\Carbon::now();
+        $password->save();
+
+           sendEmail($emailId, 'Your One-Time Password', [
+            'name' =>'',
+            'code' => $code,
+            'purpose' => 'Your OTP for Secure Access',
+            'viewpage' => 'one_time_password',
+
+         ]);
+
+       return true;
+    }
+   
     // In RegistrationController.php
 public function showRegistrationForm($sponsorCode)
 {
     return view('registrationForm', ['sponsorCode' => $sponsorCode]);
 }
+
+function SendSMS($number,$otp)
+    {
+
+    //   $message = "Dear Customer, ".$otp." is your OTP for reset password. This is valid for 5 minutes. MHLDAY";
+    $message = urlencode($message);     
+
+    $url ="http://nimbusit.net/api/pushsms?user=veerappa3&authkey=925Mgitw2g3Q&sender=MHLDAY&mobile=".$number."&text=".$message."&entityid=1701172726198989039&templateid=1707172983314741064&rpt=1";
+
+
+    //  Initiate curl
+    $ch = curl_init();
+    // Disable SSL verification
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    // Will return the response, if false it print the response
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    // Set the url
+    curl_setopt($ch, CURLOPT_URL,$url);
+    // Execute
+    $result=curl_exec($ch);
+    // Closing
+    curl_close($ch);
+    return true;
+    }
+
+
+
 
 }

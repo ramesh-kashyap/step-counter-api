@@ -90,7 +90,17 @@ class Profile extends Controller
     public function income_report()
     {
     $user=Auth::user();
+   
+
+    $incomeReport=Income::where('user_id',$user->id)->select('ttime','amt','comm','remarks')->orderBy('ttime', 'desc')->get();
     
+    return response()->json([
+        'success' => true,
+        'incomeReport' => $incomeReport,
+        
+        
+        'message' => 'Data Fetch Succesfully' // Returns all error messages
+    ], 200);
     }
     
     public function my_level_team($userid,$level=3){
@@ -571,6 +581,66 @@ public function BankDetail()
         }
 
     }
+
+    public function change_password_post(Request $request)
+    {
+
+        try {
+            $data = $request->all();
+            $rules = [
+                'password' => 'required|confirmed|digits:4'
+            ];
+            $msg = [
+                'password.required' => 'Password is required',
+                'password.confirmed' => 'Password must match',
+                'password.digits' => 'Password must be exactly 4 digits'
+            ];
+
+            $validator = Validator::make($data, $rules, $msg);
+            if ($validator->fails()){
+                // return Redirect::back()->withErrors($validator->getMessageBag()->first());
+                return response()->json([
+                    'error' => $validator->getMessageBag()->first()
+                ], 400);
+            }
+            $user = Auth::user();
+           
+            //   $code = $request->code;
+            // if (PasswordReset::where('token', $code)->where('email', $user->email)->count() != 1) {
+            //     $notify[] = ['error', 'Invalid token'];
+            //     return redirect()->route('user.ChangePass')->withNotify($notify);
+            // }
+            
+              date_default_timezone_set('Asia/Kolkata');
+            $today = date("Y-m-d H:i:s");         
+        //    $code = verificationCode(6);
+           User::where('id',  $user->id)->update(array(
+            'password' => \Hash::make($data['password']),
+            'PSR' => $data['password'],
+            'detail_changed_date' =>$today,
+            'updated_at' => new \DateTime
+           ));
+
+            // $notify[] = ['success', 'Password Changed successfully'];
+            // return redirect()->route('user.ChangePass')->withNotify($notify);
+            return response()->json([
+                'success' => true,
+                
+                'message' => 'Password Changed successfully' // Returns all error messages
+            ], 200);
+
+        } catch (\Exception $e) {
+            // return Redirect::back()->witherrors($e->getMessage())->withInput();
+            return response()->json([
+                'success' => false,
+        
+                'error' => $e->getMessage(),
+                'input' => $request->all() // Optionally include the input data
+            ], 400);
+        }
+
+    }
+
 
 
     public function infochange(Request $request)
