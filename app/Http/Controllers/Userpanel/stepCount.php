@@ -37,25 +37,37 @@ class stepCount extends Controller
                 ], 422);
             }
                
-            $check_date=Carbon::today()->format('d-m-Y');
+            $check_date=Carbon::today()->format('Y-m-d');
                                
-            $match_date = UserStep::where('user_id', 1)
+            $match_date = UserStep::where('user_id', $user->id)
             ->latest('today') // Order by 'today' column in descending order
-            ->value('today');          dd(  $match_date);
-                 if($match_date){
-                    return response()->json([
-                        'success' => false,
+            ->value('today');   
+            $match_date_formatted = Carbon::parse($match_date)->format('Y-m-d'); // Converts to "12-11-2024"
+
+                //    dd(  $check_date===$match_date_formatted);
+                 if($check_date===$match_date_formatted){
+                 
+                    $data = [
+                     
+                        'step' => $request->step,
                         
-                        'message' => 'today Already Completed' // Returns all error messages
+                    ];
+                    $update_step=DB::table('user_steps')->where('user_id',$user->id)->where('today',$check_date)->update($data);
+                 
+                    return response()->json([
+                        'success' => true,
+                        
+                        'message' => 'Step Updated' // Returns all error messages
                     ], 200);
+               
                  }else{
                     $data = [
-                        'user_id' => 1, // Replace with the actual user ID if needed
+                        'user_id' => $user->id, // Replace with the actual user ID if needed
                         'step' => $request->step,
                         'today' => Carbon::today()->format('Y-m-d')  // Store date in 'Y-m-d' format
                     ];
             
-                    // Insert data using Query Builder
+                   
                     DB::table('user_steps')->insert($data);
                    return response()->json([
                 'success' => true,

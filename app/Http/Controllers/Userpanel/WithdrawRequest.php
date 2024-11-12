@@ -212,7 +212,7 @@ class WithdrawRequest extends Controller
 
             // Validation
             $validation = Validator::make($request->all(), [
-                'amount' => 'required|numeric|min:10',
+                'amount' => 'required|numeric|min:25',
                 'paymentMode' => 'required',
                 'walletAddress' => 'required',
                 'transaction_password' => 'required',

@@ -9,16 +9,19 @@ use App\Models\User;
 use App\Models\Bank;
 use App\Models\UserLogin;
 use App\Models\Investment;
+use App\Models\Income;
 use App\Models\PasswordReset;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Mail;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use App\Models\UserStep;
 
 use Auth;
 use Log;
 use Redirect;
 use Hash;
 use Validator;
+use Carbon\Carbon;
 
 class Profile extends Controller
 {
@@ -49,7 +52,40 @@ class Profile extends Controller
     return $this->dashboard_layout();
 
     }
+    public function user_info()
+    {
+    $user=Auth::user();
+    
+    $totalSum = $user->totalInvestmentSum(); //amount:55
+    $totalWithdrawalSumToday=$user->totalWithdrawalSumToday();//amount:12
+    $totalWithdrawalSum=$user->totalWithdrawalSum();             //amount:12
+    $totalInvestmentSumToday=$user->totalInvestmentSumToday();  //amount:25
+    $today = Carbon::today()->format('Y-m-d');
+    $totalTeamincome=Income::Where('user_id',$user->id)->where('remarks','Team Income')->sum('comm');
+    $todayTeamincome=Income::Where('user_id',$user->id)->where('remarks','Team Income')->whereDate('ttime',$today)->sum('comm');
+    $totalsteps=UserStep::Where('user_id',$user->id)->sum('step');
+    $todaysteps=UserStep::Where('user_id',$user->id)->whereDate('today',$today)->sum('step');
+    return response()->json([
+        'success' => true,
+        'totalTeamincome' => $totalTeamincome,
+        'todayTeamincome' => $todayTeamincome,
+        'totalsteps' => $totalsteps,
+        'todaysteps' => $todaysteps,
+        'totalinvestSum' =>  $totalSum,
+        'InvestmentSumToday' => $totalInvestmentSumToday,
+        'totalWithdrawalSum' =>  $totalWithdrawalSum,
+        'totalWithdrawalSumToday' => $totalWithdrawalSumToday,
+        
+        'message' => 'Step Updated' // Returns all error messages
+    ], 200);
+    
+    
 
+
+    }
+
+
+    
     public function my_level_team($userid,$level=3){
         $arrin=array($userid);
         $ret=array();

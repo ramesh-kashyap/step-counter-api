@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-
+use Carbon\Carbon;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -180,13 +180,37 @@ class User extends Authenticatable
     public function investment(){
         return $this->hasMany('App\Models\Investment','user_id','id')->where('status','Active');
     }
-
+    public function totalInvestmentSum()
+    {
+        return $this->investment()->where('status', 'Active')->sum('amount');
+    }
+    public function totalInvestmentSumToday()
+    {
+        $today = Carbon::today()->format('Y-m-d');
+        return $this->investment()
+                    ->whereDate('sdate', $today)
+                    ->where('status', 'Active') // Filters by today's date
+                    ->sum('amount');
+    }
     public function releasePrinciple(){
         return $this->hasMany('App\Models\Investment','user_id','id')->where('status','Active')->where('roiCandition',1);
     }
 
     public function withdrawal(){
-        return $this->hasMany('App\Models\Withdraw','user_id','id')->where('walletType',1);
+        return $this->hasMany('App\Models\Withdraw','user_id','id');
+    }  
+    // Method to calculate the total sum of withdrawals
+    public function totalWithdrawalSum()
+    {
+        return $this->withdrawal()->where('status', 'Approved')->sum('amount'); // Assuming 'amount' is the column holding the withdrawal amount
+    }
+    public function totalWithdrawalSumToday()
+    {
+        $today = Carbon::today()->format('Y-m-d');
+        return $this->withdrawal()
+                    ->whereDate('wdate', $today)
+                    ->where('status', 'Approved') // Filters by today's date
+                    ->sum('amount'); // Sum the 'amount' of today's withdrawals
     }
 
   public function Priciplewithdrawal(){
