@@ -34,7 +34,7 @@ class AddFund extends Controller
     //     $item->status = 'Received'; // Add your custom remark value here
     //     return $item;
     // })->toArray();
-    $withdraws = Withdraw::select('amount as comm','created_at','status')->where('user_id',$userid)->where('status','!=','Failed')->take(3)->get()->map(function ($item) {
+    $withdraws = Withdraw::select('amount as comm','created_at','status')->where('user_id',$user->id)->where('status','!=','Failed')->take(3)->get()->map(function ($item) {
         $item->remarks = 'Withdrawals'; // Add your custom remark value here
         return $item;
     })->toArray();
@@ -138,8 +138,8 @@ else
     'order_number' => $invoice,
     'currency' => $paymentMode,
     // 'email' => $user->email,
-    // 'order_name' =>$user->username,
-    'order_name' =>11223344,
+    'order_name' =>$user->username,
+   
     'callback_url' => 'https://syntheticventure.com/dynamicupicallback?json=true',
     'api_key' => '6Wmf87DHpYmEKz6zDDH8UrzMXACo7nweTe5C8MVkUwYh6Y4S6-yY8wo8hfKjR-K0',
     ];
@@ -164,9 +164,9 @@ if($resultAarray['status']=="success")
    $data = [
         'orderId' => $invoice,
         'txn_no' =>$resultAarray['data']['txn_id'],
-        // 'user_id' => $user->id,
-        'user_id' => 1,
-        'user_id_fk' => 11223344,
+        'user_id' => $user->id,
+     
+        'user_id_fk' => $user->username,
         'amount' => $amountTotal,
         'type' =>$paymentMode,
         'status' => 'Pending',

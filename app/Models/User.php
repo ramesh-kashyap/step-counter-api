@@ -63,7 +63,11 @@ class User extends Authenticatable
     }
 
 
-
+    public function investments_t()
+    {
+        return $this->hasMany('App\Models\Investment', 'user_id', 'id');
+                    
+    }
     public function buy_packageAmt(){
         $amt= Investment::where('active_from',Auth::user()->username)->sum('amount');
         return $amt;
