@@ -59,10 +59,10 @@ class Team extends Controller
       $user=Auth::user();
       // print_r($user->username);die();
     //   $ids=$this->my_level_team_count( 1);
-      $ids=$this->my_level_team($user->id);
+      $ids=$this->my_level_team(1);
       $gen_teams = [];
       $level = 1;
-      $count =$this->my_level_team_count($user->id);
+      $count =$this->my_level_team_count(1);
       // Loop through each level indefinitely until there's no data for the level
      
     //   foreach ($gen_teams as $level => $team) {
@@ -83,6 +83,10 @@ class Team extends Controller
                     ->where('roiCandition', 0);
           }], 'amount')
           ->get();
+          
+          $users->each(function ($user) {
+            $user->investment_sum_amount = $user->investment_sum_amount ?? 0;
+        });
           // Store the user data for this level
           $teamData[$level] = $users->toArray();
           

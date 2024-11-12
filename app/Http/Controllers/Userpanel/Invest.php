@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Investment;
+use App\Models\GeneralSetting;
 use App\Models\Income;
 use App\Models\Contract;
 use Illuminate\Support\Facades\Validator;
@@ -58,6 +59,34 @@ class Invest extends Controller
 
     }
 
+    public function confirm_pay(){
+      $user=Auth::user();
+      $getInvestdata = Investment::where('user_id', 1)
+      ->where('status', 'Pending')
+      ->select('payment_mode', 'amount', 'orderId', 'transaction_id')
+      ->latest() // Orders by 'created_at' by default in descending order
+      ->first(); 
+        
+
+      $settings = GeneralSetting::first(['usdtBep20', 'usdtTrc20']);
+
+      // Determine the usdt_address based on payment_mode
+      if ($getInvestdata && $getInvestdata->payment_mode === 'USDT_BSC') {
+          $usdt_address = $settings->usdtBep20;
+      } else {
+          $usdt_address = $settings->usdtTrc20;
+      }
+
+        $response = [
+          'payment_mode' => $getInvestdata->payment_mode,
+          'amount' => $getInvestdata->amount,
+          'orderId' => $getInvestdata->orderId,
+          'transaction_id' => $getInvestdata->transaction_id,
+          'usdt_address' => $usdt_address
+      ];
+
+      return response()->json($response);
+    }
 
 
     public function deposit()
