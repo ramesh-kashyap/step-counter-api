@@ -105,6 +105,7 @@ $min_amount = $request->minimum_deposit;
 $max_amount = $request->maximum_deposit;
 $plan = $request->plan;
 $paymentMode = $request->PSys;
+Log::info($paymentMode);
 $amount = $request->Sum;
 
 

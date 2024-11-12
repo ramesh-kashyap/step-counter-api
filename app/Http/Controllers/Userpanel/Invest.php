@@ -165,14 +165,14 @@ public function viewdetail($txnId)
 
    
     
-     $invest_check=Investment::where('user_id',$user->id)->where('status','Pending')->first();
- if ($invest_check) 
-    {
-      // return  redirect()->route('user.DepositHistory')->withErrors(array('your deposit already pending'));
-      return response()->json([
-        'error' => 'Your deposit is already pending.'
-    ], 400); 
-    }
+//      $invest_check=Investment::where('user_id',$user->id)->where('status','Pending')->first();
+//  if ($invest_check) 
+//     {
+//       // return  redirect()->route('user.DepositHistory')->withErrors(array('your deposit already pending'));
+//       return response()->json([
+//         'error' => 'Your deposit is already pending.'
+//     ], 400); 
+//     }
    
    
    
