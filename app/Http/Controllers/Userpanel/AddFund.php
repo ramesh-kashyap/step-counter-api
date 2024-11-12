@@ -23,7 +23,7 @@ class AddFund extends Controller
   {
 
   $user=Auth::user();
-   $userid=1;
+   $userid=$user->id;
   
 
     $investments = Investment::select('amount as comm','created_at','status')->where('user_id',$userid)->where('status','Active')->take(2)->get()->map(function ($item) {

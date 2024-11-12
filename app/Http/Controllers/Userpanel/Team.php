@@ -59,7 +59,7 @@ class Team extends Controller
       $user=Auth::user();
       // print_r($user->username);die();
     //   $ids=$this->my_level_team_count( 1);
-      $ids=$this->my_level_team(1);
+      $ids=$this->my_level_team($user->id);
       $gen_teams = [];
       $level = 1;
       
@@ -80,12 +80,10 @@ class Team extends Controller
       foreach ($ids as $level => $id) {
           // Fetching user data for the current level's IDs
           $users = User::whereIn('id', $id)->get();
-          dd($users);
           // Store the user data for this level
           $teamData[$level] = $users->toArray();
       }
       $count = User::whereIn('id', $id)->count();
-      dd($count);
         $limit = $request->limit ? $request->limit : $this->paginationLimit();
             $status = $request->status ? $request->status : null;
             $search = $request->search ? $request->search : null;
