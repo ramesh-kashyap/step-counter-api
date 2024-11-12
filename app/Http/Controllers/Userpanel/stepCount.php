@@ -77,5 +77,22 @@ class stepCount extends Controller
         }
        
 
+        public function step_history(){
+            $user=Auth::user();
+               
+           $stepHistory=UserStep::where('user_id',$user->id)->select('step','today') ->orderBy('today', 'desc')->get();
+        $totalStep=UserStep::where('user_id',$user->id)->sum('step');
+                  
+                 
+                    return response()->json([
+                        'success' => true,
+                        'stepHistory' => $stepHistory,
+                        'totalStep' => $totalStep,
+                        
+                        'message' => 'Data Fetch Succesfully' // Returns all error messages
+                    ], 200);
+               
+               
+        }
 
 }

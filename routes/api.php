@@ -18,7 +18,8 @@ Route::post('/registers', [App\Http\Controllers\Register::class, 'register']);
 
 Route::any('/forgot_submit', [App\Http\Controllers\Login::class, 'forgot_password_submit']);
 Route::get('/user-inforamtion', [App\Http\Controllers\UserPanel\Profile::class, 'user_info']);
-
+Route::get('/stepHistory', [App\Http\Controllers\UserPanel\stepCount::class, 'step_history']);
+Route::get('/incomeReport', [App\Http\Controllers\UserPanel\Profile::class, 'income_report']);
 
 
 Route::middleware(['auth:sanctum', 'check.app.key'])->group(function () {

@@ -65,8 +65,7 @@ class Profile extends Controller
     $todayTeamincome=Income::Where('user_id',$user->id)->where('remarks','Team Income')->whereDate('ttime',$today)->sum('comm');
     $totalsteps=UserStep::Where('user_id',$user->id)->sum('step');
     $todaysteps=UserStep::Where('user_id',$user->id)->whereDate('today',$today)->sum('step');
-    return response()->json([
-        'success' => true,
+    $data=[
         'totalTeamincome' => $totalTeamincome,
         'todayTeamincome' => $todayTeamincome,
         'totalsteps' => $totalsteps,
@@ -75,8 +74,11 @@ class Profile extends Controller
         'InvestmentSumToday' => $totalInvestmentSumToday,
         'totalWithdrawalSum' =>  $totalWithdrawalSum,
         'totalWithdrawalSumToday' => $totalWithdrawalSumToday,
-        
-        'message' => 'Step Updated' // Returns all error messages
+    ];
+    return response()->json([
+        'success' => true,
+        'data'=>$data,
+        'message' => 'Data Submited' // Returns all error messages
     ], 200);
     
     
@@ -85,6 +87,11 @@ class Profile extends Controller
     }
 
 
+    public function income_report()
+    {
+    $user=Auth::user();
+    
+    }
     
     public function my_level_team($userid,$level=3){
         $arrin=array($userid);
