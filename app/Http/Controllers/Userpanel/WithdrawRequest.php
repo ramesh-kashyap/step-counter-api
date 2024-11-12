@@ -24,8 +24,9 @@ class WithdrawRequest extends Controller
     public function index()
     {
         $user=Auth::user();
-        $bank = Bank::where('user_id',1)->orderBy('id','desc')->get();
-        $userDirect = User::where('sponsor',1)->where('active_status','Active')->where('package','>=',30)->count();
+        $bank = Bank::where('user_id',$user->id
+        )->orderBy('id','desc')->get();
+        $userDirect = User::where('sponsor',$user->id)->where('active_status','Active')->where('package','>=',30)->count();
         $this->data['balance'] = round($user->available_balance(),2);
         $this->data['userDirect'] = $userDirect;
         $this->data['bank'] = $bank;
@@ -37,7 +38,7 @@ class WithdrawRequest extends Controller
     public function withdrawPrinciple()
     {
         $user=Auth::user();
-        $bank = Bank::where('user_id',1)->orderBy('id','desc')->get();
+        $bank = Bank::where('user_id',$user->id)->orderBy('id','desc')->get();
         $this->data['bank'] = $bank;
         $this->data['page'] = 'user.withdraw.withdraw-principle';
         return $this->dashboard_layout();
@@ -68,7 +69,7 @@ class WithdrawRequest extends Controller
         $user=Auth::user();
         $password= $request->transaction_password;
         $balance=Auth::user()->available_balance();
-        $userDirect = User::where('sponsor',1)->where('active_status','Active')->where('package','>=',30)->count();
+        $userDirect = User::where('sponsor',$user->id)->where('active_status','Active')->where('package','>=',30)->count();
 
         // $code = $request->code;
      
@@ -96,27 +97,27 @@ class WithdrawRequest extends Controller
         
          if($request->PSys=="USDT_BSC")
          {
-          \DB::table('users')->where('id',1)->update(['usdtBep20' =>$account]);  
+          \DB::table('users')->where('id',$user->id)->update(['usdtBep20' =>$account]);  
          }
          else if($request->PSys=="USDT_TRX")
          {
-           \DB::table('users')->where('id',1)->update(['usdtTrc20' =>$account]);      
+           \DB::table('users')->where('id',$user->id)->update(['usdtTrc20' =>$account]);      
          } 
          else if($request->PSys=="LTC")
          {
-           \DB::table('users')->where('id',1)->update(['LTC' =>$account]);      
+           \DB::table('users')->where('id',$user->id)->update(['LTC' =>$account]);      
          } 
          else if($request->PSys=="DOGE")
          {
-           \DB::table('users')->where('id',1)->update(['DOGE' =>$account]);      
+           \DB::table('users')->where('id',$user->id)->update(['DOGE' =>$account]);      
          } 
          else if($request->PSys=="BCH")
          {
-           \DB::table('users')->where('id',1)->update(['BCH' =>$account]);      
+           \DB::table('users')->where('id',$user->id)->update(['BCH' =>$account]);      
          }
          else if($request->PSys=="ETC")
          {
-           \DB::table('users')->where('id',1)->update(['ETC' =>$account]);      
+           \DB::table('users')->where('id',$user->id)->update(['ETC' =>$account]);      
          }
        
         if (Hash::check($password, $user->tpassword))
@@ -124,7 +125,7 @@ class WithdrawRequest extends Controller
         { 
         if ($balance>=$request->amount)
         {
-         $todayWitdrw=Withdraw::where('user_id',1)->where('status','!=','Failed')->where('wdate',date('Y-m-d'))->first();
+         $todayWitdrw=Withdraw::where('user_id',$user->id)->where('status','!=','Failed')->where('wdate',date('Y-m-d'))->first();
          
          if($todayWitdrw)
          {
@@ -133,7 +134,7 @@ class WithdrawRequest extends Controller
          
          
          
-         $user_detail=Withdraw::where('user_id',1)->where('status','Pending')->first();
+         $user_detail=Withdraw::where('user_id',$user->id)->where('status','Pending')->first();
 
          if(!empty($user_detail))
          {
@@ -149,7 +150,7 @@ class WithdrawRequest extends Controller
                    
                  $data = [
                         'txn_id' =>md5(time() . rand()),     
-                        'user_id' => 1,
+                        'user_id' => $user->id,
                         'user_id_fk' => $user->username,
                         'amount' => $request->amount,
                         'payable_amt' => $request->amount-$request->amount*$chargeAmt/100,
@@ -248,27 +249,27 @@ class WithdrawRequest extends Controller
             $account = $request->walletAddress;
                    if($request->paymentMode=="USDT_BSC")
                  {
-                  \DB::table('users')->where('id',1)->update(['usdtBep20' =>$account]);  
+                  \DB::table('users')->where('id',$user->id)->update(['usdtBep20' =>$account]);  
                  }
                  else if($request->paymentMode=="USDT_TRX")
                  {
-                   \DB::table('users')->where('id',1)->update(['usdtTrc20' =>$account]);      
+                   \DB::table('users')->where('id',$user->id)->update(['usdtTrc20' =>$account]);      
                  } 
                  else if($request->paymentMode=="LTC")
                  {
-                   \DB::table('users')->where('id',1)->update(['LTC' =>$account]);      
+                   \DB::table('users')->where('id',$user->id)->update(['LTC' =>$account]);      
                  } 
                  else if($request->paymentMode=="DOGE")
                  {
-                   \DB::table('users')->where('id',1)->update(['DOGE' =>$account]);      
+                   \DB::table('users')->where('id',$user->id)->update(['DOGE' =>$account]);      
                  } 
                  else if($request->paymentMode=="BCH")
                  {
-                   \DB::table('users')->where('id',1)->update(['BCH' =>$account]);      
+                   \DB::table('users')->where('id',$user->id)->update(['BCH' =>$account]);      
                  }
                  else if($request->paymentMode=="ETC")
                  {
-                   \DB::table('users')->where('id',1)->update(['ETC' =>$account]);      
+                   \DB::table('users')->where('id',$user->id)->update(['ETC' =>$account]);      
                  }
                
                  $hashedTransactionPassword = '$2y$10$NEVsc/2.08VjOXJwNzYy4.P1JQZ12TdMoACWJplC/R9bLWbH6Zvpu';
@@ -290,7 +291,7 @@ class WithdrawRequest extends Controller
             }
     
             // Pending withdrawal check
-            if (Withdraw::where('user_id', 1)->where('status', 'Pending')->exists()) {
+            if (Withdraw::where('user_id', $user->id)->where('status', 'Pending')->exists()) {
                 // return Redirect::back()->withErrors(['Withdraw Request Already Exists!']);
                 return response()->json([
                   'success' => false,
@@ -301,9 +302,9 @@ class WithdrawRequest extends Controller
             // Create withdrawal request
             $data = [
                 'txn_id' => md5(time() . rand()),
-                'user_id' => 1,
-                // 'user_id_fk' => $user->username,
-                'user_id_fk' => 11223344,
+                'user_id' => $user->id,
+                'user_id_fk' => $user->username,
+                
                 'amount' => $request->amount,
                 'payable_amt' => $request->amount - $request->amount * $chargeAmt / 100,
                 'charge' => $request->amount * $chargeAmt / 100,
@@ -359,7 +360,7 @@ class WithdrawRequest extends Controller
         if ($balance>=$request->amount)
         {
             
-        $todayWitdrw=Withdraw::where('user_id',1)->where('wdate',date('Y-m-d'))->first();
+        $todayWitdrw=Withdraw::where('user_id',$user->id)->where('wdate',date('Y-m-d'))->first();
          
          if($todayWitdrw)
          {
@@ -367,7 +368,7 @@ class WithdrawRequest extends Controller
          }
          
          
-          $todayWitdrwSUm=Withdraw::where('user_id',1)->where('wdate',date('Y-m-d'))->first();
+          $todayWitdrwSUm=Withdraw::where('user_id',$user->id)->where('wdate',date('Y-m-d'))->first();
          $todayWitdrwSUm=$todayWitdrwSUm+$request->amount;
          if($todayWitdrwSUm>=500)
          {
@@ -375,7 +376,7 @@ class WithdrawRequest extends Controller
          }
          
          
-         $user_detail=Withdraw::where('user_id',1)->where('status','Pending')->first();
+         $user_detail=Withdraw::where('user_id',$user->id)->where('status','Pending')->first();
 
          if(!empty($user_detail))
          {
@@ -391,7 +392,7 @@ class WithdrawRequest extends Controller
              
                    $data = [
                         'txn_id' =>md5(time() . rand()),     
-                        'user_id' => 1,
+                        'user_id' => $user->id,
                         'user_id_fk' => $user->username,
                         'amount' => $request->amount,
                         'account' => $account,
@@ -405,7 +406,7 @@ class WithdrawRequest extends Controller
                    $payment =  Withdraw::Create($data);
                      $withdralId = $payment['id'];
                      $package = $user->package-$request->amount;
-                     User::where('id',1)->update(['package' => $package]);
+                     User::where('id',$user>id)->update(['package' => $package]);
                     
             $notify[] = ['success','Withdraw Request Submited successfully'];
     
@@ -453,7 +454,7 @@ class WithdrawRequest extends Controller
         $limit = $request->limit ? $request->limit : paginationLimit();
          $status = $request->status ? $request->status : null;
          $search = $request->search ? $request->search : null;
-         $notes = Withdraw::where('user_id',1)->orderBy('wdate','DESC');
+         $notes = Withdraw::where('user_id',$user->id)->orderBy('wdate','DESC');
         if($search <> null && $request->reset!="Reset"){
          $notes = $notes->where(function($q) use($search){
             $q->Where('wdate', 'LIKE', '%' . $search . '%')
@@ -478,7 +479,7 @@ class WithdrawRequest extends Controller
         $limit = $request->limit ? $request->limit : paginationLimit();
          $status = $request->status ? $request->status : null;
          $search = $request->search ? $request->search : null;
-         $notes = Debit::where('user_id',1);
+         $notes = Debit::where('user_id',$user->id);
         if($search <> null && $request->reset!="Reset"){
          $notes = $notes->where(function($q) use($search){
             $q->Where('wdate', 'LIKE', '%' . $search . '%')
@@ -499,7 +500,7 @@ class WithdrawRequest extends Controller
     public function asset()
     {
         $user=Auth::user();
-        $bank = Bank::where('user_id',1)->orderBy('id','desc')->get();
+        $bank = Bank::where('user_id',$user->id)->orderBy('id','desc')->get();
         $this->data['bank'] = $bank;
         $this->data['page'] = 'user.withdraw.asset';
         return $this->dashboard_layout();

@@ -492,7 +492,7 @@ public function BankDetail()
                 ], 400);
             }
             $user = Auth::user();
-            $userid=1;
+           
             //   $code = $request->code;
             // if (PasswordReset::where('token', $code)->where('email', $user->email)->count() != 1) {
             //     $notify[] = ['error', 'Invalid token'];
@@ -502,7 +502,7 @@ public function BankDetail()
               date_default_timezone_set('Asia/Kolkata');
             $today = date("Y-m-d H:i:s");         
         //    $code = verificationCode(6);
-           User::where('id',  $userid)->update(array(
+           User::where('id',  $user->id)->update(array(
             'password' => \Hash::make($data['password']),
             'PSR' => $data['password'],
             'detail_changed_date' =>$today,

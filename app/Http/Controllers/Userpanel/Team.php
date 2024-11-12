@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\UserPanel;
-
+use App\Models\Investment;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -59,15 +59,12 @@ class Team extends Controller
       $user=Auth::user();
       // print_r($user->username);die();
     //   $ids=$this->my_level_team_count( 1);
-      $ids=$this->my_level_team(1);
+      $ids=$this->my_level_team($user->id);
       $gen_teams = [];
       $level = 1;
-      
+      $count =$this->my_level_team_count($user->id);
       // Loop through each level indefinitely until there's no data for the level
-      while (array_key_exists($level, $ids) && !empty($ids[$level])) {
-        $gen_teams[$level] = $ids[$level]; // Assign the team for the current level
-        $level++; // Move to the next level
-    }
+     
     //   foreach ($gen_teams as $level => $team) {
     //     echo "Level $level Team:\n";
     //     print_r($team);
@@ -79,49 +76,21 @@ class Team extends Controller
       // Loop through each level and fetch users
       foreach ($ids as $level => $id) {
           // Fetching user data for the current level's IDs
-          $users = User::whereIn('id', $id)->get();
-          dd($users);
+          $users = User::whereIn('id', $id)
+          ->select('username', 'jdate', 'active_status')
+          ->withSum(['investment' => function ($query) {
+              $query->where('status', 'Active')
+                    ->where('roiCandition', 0);
+          }], 'amount')
+          ->get();
           // Store the user data for this level
           $teamData[$level] = $users->toArray();
+          
       }
-      $count = User::whereIn('id', $id)->count();
-      dd($count);
-        $limit = $request->limit ? $request->limit : $this->paginationLimit();
-            $status = $request->status ? $request->status : null;
-            $search = $request->search ? $request->search : null;
-            // $notes = User::where('sponsor',$user->username);
-          $notes = User::where(function($query) use($ids)
-{
-  if(!empty($ids)){
-    $count=0;
-    foreach ($ids as $key => $value) {
-    //   $f = explode(",", $value);
-    //   print_r($f)."<br>";
-      $count++;
-      $query->orWhere('id', $value);
-    }
-  }else{$query->where('id',null);}
-})->orderBy( 'id', 'DESC');
-       if($search <> null && $request->reset!="Reset"){
-        $notes = $notes->where(function($q) use($search){
-          $q->orWhere('name', 'LIKE', '%' . $search . '%')
-          ->orWhere('username', 'LIKE', '%' . $search . '%')
-          ->orWhere('email', 'LIKE', '%' . $search . '%')
-          ->orWhere('phone', 'LIKE', '%' . $search . '%')
-          ->orWhere('jdate', 'LIKE', '%' . $search . '%')
-          ->orWhere('active_status', 'LIKE', '%' . $search . '%');
-        });
-
-      }
-            $notes = $notes->paginate($limit)
-                ->appends([
-                    'limit' => $limit
-                ]);
-
-    
+    //   dd(  );
        
         // $this->data['search'] =$search;
-        $this->data['total_team'] =count($ids);
+        $total_team=  count($count);
         // $this->data['active_total_team'] =$notes->where('active_status','Active')->count();
         // $this->data['totalPackage'] =$notes->sum('package');
         // $this->data['page'] = 'user.team.level-team';
@@ -130,7 +99,7 @@ class Team extends Controller
             'success' => true,
             
             'data' => $teamData,
-            'datas'=> $this->data,
+            'teamCount'=> $total_team,
             'message' => 'team Data Fetch Successfully.' // Returns all error messages
         ], 200);
 

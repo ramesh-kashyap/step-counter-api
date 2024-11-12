@@ -165,7 +165,7 @@ public function viewdetail($txnId)
 
    
     
-     $invest_check=Investment::where('user_id',1)->where('status','Pending')->first();
+     $invest_check=Investment::where('user_id',$user->id)->where('status','Pending')->first();
  if ($invest_check) 
     {
       // return  redirect()->route('user.DepositHistory')->withErrors(array('your deposit already pending'));
@@ -196,8 +196,8 @@ public function viewdetail($txnId)
         'order_number' => $invoice,
         'currency' => $paymentMode,
         // 'email' => $user->email,
-        // 'order_name' =>$user->username,
-        'order_name' =>11223344,
+        'order_name' =>$user->username,
+      
         'callback_url' => 'https://qstaig.com/dynamicupicallback?json=true',
         'api_key' => '4iJxhwNsKCrdhtDn8Q9ctk_vdMvDs6JoXb7DeiRm95R45OeCUhFH8RcgRDOK-lIM',
         ];
@@ -220,16 +220,16 @@ public function viewdetail($txnId)
             'plan' => $plan,
             'orderId' => $invoice,
             'transaction_id' =>$resultAarray['data']['txn_id'],
-           // 'user_id' => $user->id,
-              'user_id' => 1,
-            // 'user_id_fk' => $user->username,
-            'user_id_fk' => 11223344,
+           'user_id' => $user->id,
+              
+            'user_id_fk' => $user->username,
+            
             'amount' => $amountTotal,
             'payment_mode' =>$paymentMode,
             'status' => 'Pending',
             'sdate' => Date("Y-m-d"),
-            // 'active_from' => $user->username,
-            'active_from' => 11223344,
+            'active_from' => $user->username,
+           
             'created_at' => date("Y-m-d H:i:s"),
         ];
         $payment =  Investment::insert($data);
