@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use App\Models\Investment;
 use App\Models\User;
 use Redirect;
 use Helper;
@@ -101,7 +102,7 @@ class stepCount extends Controller
             ->value('step');
            
           if($get_step>=500){
-            $get_invest=
+            $get_invest=Investment::where('user_id',1)->('status','Active')->
           }
         }
 
