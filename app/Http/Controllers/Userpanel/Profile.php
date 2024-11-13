@@ -74,6 +74,8 @@ class Profile extends Controller
         'investmentSumToday' => $totalInvestmentSumToday,
         'totalWithdrawalSum' =>  $totalWithdrawalSum,
         'totalWithdrawalSumToday' => $totalWithdrawalSumToday,
+        'userName' => $user->username,
+
     ];
     return response()->json([
         'success' => true,
