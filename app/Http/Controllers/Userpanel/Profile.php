@@ -66,12 +66,12 @@ class Profile extends Controller
     $totalsteps=UserStep::Where('user_id',$user->id)->sum('step');
     $todaysteps=UserStep::Where('user_id',$user->id)->whereDate('today',$today)->sum('step');
     $data=[
-        'totalTeamincome' => $totalTeamincome,
-        'todayTeamincome' => $todayTeamincome,
-        'totalsteps' => $totalsteps,
-        'todaysteps' => $todaysteps,
-        'totalinvestSum' =>  $totalSum,
-        'InvestmentSumToday' => $totalInvestmentSumToday,
+        'totalTeamIncome' => $totalTeamincome,
+        'todayTeamIncome' => $todayTeamincome,
+        'totalSteps' => $totalsteps,
+        'todaySteps' => $todaysteps,
+        'totalInvestSum' =>  $totalSum,
+        'investmentSumToday' => $totalInvestmentSumToday,
         'totalWithdrawalSum' =>  $totalWithdrawalSum,
         'totalWithdrawalSumToday' => $totalWithdrawalSumToday,
     ];

@@ -40,7 +40,7 @@ class Login extends Controller
 
     public function login(Request $request)
     {
-        Log::info("hi");
+        Log::info(message: "hi");
       
             $validation =  Validator::make($request->all(), [
                 'phone' => 'required',
