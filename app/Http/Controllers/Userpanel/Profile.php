@@ -66,12 +66,12 @@ class Profile extends Controller
     $totalsteps=UserStep::Where('user_id',$user->id)->sum('step');
     $todaysteps=UserStep::Where('user_id',$user->id)->whereDate('today',$today)->sum('step');
     $data=[
-        'totalTeamincome' => $totalTeamincome,
-        'todayTeamincome' => $todayTeamincome,
-        'totalsteps' => $totalsteps,
-        'todaysteps' => $todaysteps,
-        'totalinvestSum' =>  $totalSum,
-        'InvestmentSumToday' => $totalInvestmentSumToday,
+        'totalTeamIncome' => $totalTeamincome,
+        'todayTeamIncome' => $todayTeamincome,
+        'totalSteps' => $totalsteps,
+        'todaySteps' => $todaysteps,
+        'totalInvestSum' =>  $totalSum,
+        'investmentSumToday' => $totalInvestmentSumToday,
         'totalWithdrawalSum' =>  $totalWithdrawalSum,
         'totalWithdrawalSumToday' => $totalWithdrawalSumToday,
     ];
@@ -523,18 +523,28 @@ public function BankDetail()
     }
    
 
-    public function change_password_post(Request $request)
+    public function change_number(Request $request)
     {
 
         try {
             $data = $request->all();
             $rules = [
-                'password' => 'required|confirmed|digits:4'
+                'first_code' => 'required|numeric|digits:6', // Ensures the first code is required, numeric, and exactly 6 digits
+                'second_code' => 'required|numeric|digits:6', // Ensures the second code is required, numeric, and exactly 6 digits
+                'newphone' => 'required|unique:users,phone,' , // Ensures phone is required, unique, and valid
             ];
             $msg = [
-                'password.required' => 'Password is required',
-                'password.confirmed' => 'Password must match',
-                'password.digits' => 'Password must be exactly 4 digits'
+                'first_code.required' => 'The first code is required.',
+                'first_code.numeric' => 'The first code must be a numeric value.',
+                'first_code.digits' => 'The first code must be exactly 6 digits.',
+                
+                'second_code.required' => 'The second code is required.',
+                'second_code.numeric' => 'The second code must be a numeric value.',
+                'second_code.digits' => 'The second code must be exactly 6 digits.',
+                
+                'newphone.required' => 'Phone number is required.',
+                'newphone.unique' => 'This phone number is already registered.',
+                'newphone.regex' => 'Please enter a valid phone number.',
             ];
 
             $validator = Validator::make($data, $rules, $msg);
@@ -555,28 +565,33 @@ public function BankDetail()
               date_default_timezone_set('Asia/Kolkata');
             $today = date("Y-m-d H:i:s");         
         //    $code = verificationCode(6);
-           User::where('id',  $user->id)->update(array(
-            'password' => \Hash::make($data['password']),
-            'PSR' => $data['password'],
+           $update_number=User::where('id',  $user->id)->update(array(
+           'phone'=>$request->newphone,
             'detail_changed_date' =>$today,
             'updated_at' => new \DateTime
            ));
-
-            // $notify[] = ['success', 'Password Changed successfully'];
-            // return redirect()->route('user.ChangePass')->withNotify($notify);
+          if($update_number){  return response()->json([
+            'success' => true,
+            
+            'message' => 'Phone Number  Changed successfully' // Returns all error messages
+        ], 200);}
+        else{
             return response()->json([
-                'success' => true,
+                'success' => false,
                 
-                'message' => 'Password Changed successfully' // Returns all error messages
+                'message' => 'Phone Number Change Failed' // Returns all error messages
             ], 200);
+        }
+           
+          
 
         } catch (\Exception $e) {
-            // return Redirect::back()->witherrors($e->getMessage())->withInput();
+           
             return response()->json([
                 'success' => false,
         
                 'error' => $e->getMessage(),
-                'input' => $request->all() // Optionally include the input data
+                'input' => $request->all() 
             ], 400);
         }
 

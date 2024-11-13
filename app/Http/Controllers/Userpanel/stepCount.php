@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use App\Models\Investment;
 use App\Models\User;
 use Redirect;
 use Helper;
@@ -91,6 +92,16 @@ class stepCount extends Controller
                     ], 200);
                
                
+        }
+
+        public function checkstep_bonus(){
+            $user=Auth::user();
+            $get_step=UserStep::where('user_id',1)->whereDate('today', now()->format('Y-m-d'))
+            ->value('step');
+           
+          if($get_step>=500){
+            $get_invest=Investment::where('user_id',1)->('status','Active')->
+          }
         }
 
 }
