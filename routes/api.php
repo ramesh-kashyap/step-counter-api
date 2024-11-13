@@ -36,6 +36,13 @@ Route::post('/edit-number', [App\Http\Controllers\UserPanel\Profile::class, 'cha
 Route::post('/WithdrawRequest', [App\Http\Controllers\UserPanel\WithdrawRequest::class, 'WithdrawRequest']);
 Route::post('/edit-password', [App\Http\Controllers\UserPanel\Profile::class, 'change_password_post']);
 Route::post('/Step', [App\Http\Controllers\UserPanel\stepCount::class, 'step_count']);
+Route::get('/user-inforamtion', [App\Http\Controllers\UserPanel\Profile::class, 'user_info']);
+Route::get('/incomeReport', [App\Http\Controllers\UserPanel\Profile::class, 'income_report']);
+Route::post('/checkPaymentStatus', [App\Http\Controllers\UserPanel\Dashboard::class, 'checkPaymentStatus']);
+Route::any('/dynamicupicallback', [App\Http\Controllers\Cron::class, 'dynamicupicallback']);
+Route::get( '/levelTeam', [App\Http\Controllers\UserPanel\Team::class, 'LevelTeam']);
+
+Route::get('/confirmPay', [App\Http\Controllers\UserPanel\Invest::class, 'confirm_pay']);
 
 });
 
