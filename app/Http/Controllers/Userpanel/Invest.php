@@ -60,33 +60,49 @@ class Invest extends Controller
     }
 
     public function confirm_pay(){
-      $user=Auth::user();
-      $getInvestdata = Investment::where('user_id', 1)
-      ->where('status', 'Pending')
-      ->select('payment_mode', 'amount', 'orderId', 'transaction_id')
-      ->latest() // Orders by 'created_at' by default in descending order
-      ->first(); 
-        
-
-      $settings = GeneralSetting::first(['usdtBep20', 'usdtTrc20']);
-
-      // Determine the usdt_address based on payment_mode
-      if ($getInvestdata && $getInvestdata->payment_mode === 'USDT_BSC') {
-          $usdt_address = $settings->usdtBep20;
-      } else {
-          $usdt_address = $settings->usdtTrc20;
+      try {
+          $user = Auth::user();
+          Log::info("Fetching investment data for user ID: {$user->id}");
+  
+          $getInvestdata = Investment::where('user_id', $user->id)
+              ->where('status', 'Pending')
+              ->select('payment_mode', 'amount', 'orderId', 'transaction_id')
+              ->latest() // Orders by 'created_at' by default in descending order
+              ->first(); 
+  
+          if (!$getInvestdata) {
+              Log::info("No pending investment data found for user ID: {$user->id}");
+              return response()->json(['error' => 'No pending investment data found'], 404);
+          }
+  
+          $settings = GeneralSetting::first(['usdtBep20', 'usdtTrc20']);
+          Log::info("Fetched general settings.");
+  
+          // Determine the usdt_address based on payment_mode
+          $usdt_address = $getInvestdata->payment_mode === 'USDT_BSC' ? $settings->usdtBep20 : $settings->usdtTrc20;
+          Log::info("USDT Address determined based on payment mode: {$getInvestdata->payment_mode}");
+  
+          $response = [
+              'payment_mode' => $getInvestdata->payment_mode,
+              'amount' => $getInvestdata->amount,
+              'orderId' => $getInvestdata->orderId,
+              'transaction_id' => $getInvestdata->transaction_id,
+              'usdt_address' => $usdt_address
+          ];
+  
+          Log::info("Response prepared for user ID: {$user->id}", $response);
+  
+          return response()->json([
+            'success' => true,
+            'message' => 'Register Successfully',
+            'data' => $response
+        ], 200);
+      
+      } catch (\Exception $e) {
+          Log::error("Error in confirm_pay for user ID: {$user->id} - " . $e->getMessage());
+          return response()->json(['error' => 'An error occurred while processing the payment. Please try again later.'], 500);
       }
-
-        $response = [
-          'payment_mode' => $getInvestdata->payment_mode,
-          'amount' => $getInvestdata->amount,
-          'orderId' => $getInvestdata->orderId,
-          'transaction_id' => $getInvestdata->transaction_id,
-          'usdt_address' => $usdt_address
-      ];
-
-      return response()->json($response);
-    }
+  }
 
 
     public function deposit()

@@ -23,8 +23,6 @@ class stepCount extends Controller
         $user=Auth::user();
          $validation =  Validator::make($request->all(), [
                 'step' => 'required',
-              
-
             ]);
             if($validation->fails()) {
 
