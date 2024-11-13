@@ -470,8 +470,11 @@ public function tradeOn()
         if($validation->fails()) {
             Log::info($validation->getMessageBag()->first());
     
-            return redirect()->route('user.dashboard')->withErrors($validation->getMessageBag()->first())->withInput();
-        }
+            return response()->json([
+              'success' => false,
+              'errors' => $validation->errors()->first() // Returns all error messages
+          ], 422);      
+          }
 
          $user = Auth::user();
           $orderId=$request->orderId;

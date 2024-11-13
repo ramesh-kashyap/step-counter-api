@@ -95,4 +95,14 @@ class stepCount extends Controller
                
         }
 
+        public function checkstep_bonus(){
+            $user=Auth::user();
+            $get_step=UserStep::where('user_id',1)->whereDate('today', now()->format('Y-m-d'))
+            ->value('step');
+           
+          if($get_step>=500){
+            $get_invest=
+          }
+        }
+
 }
