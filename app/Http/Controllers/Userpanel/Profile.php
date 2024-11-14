@@ -66,13 +66,13 @@ class Profile extends Controller
     $todayTeamincome=Income::Where('user_id',$user->id)->where('remarks','Team Income')->whereDate('ttime',$today)->sum('comm');
     $totalsteps=UserStep::Where('user_id',$user->id)->sum('step');
     $todaysteps=UserStep::Where('user_id',$user->id)->whereDate('today',$today)->sum('step');
-    $available_balance=$user->available_balance();
-
+    
     $available_balance = ($user->totalInvestmentSum() + $user->users_incomes()) - ($user->totalWithdrawalSum());
     $wallets =[
        
         'trcAddress' => $user->usdtTrc20,  // Replace 'trc_column' with your actual column name for TRC data
-        'bepAddress' => $user->usdtBep20,  // Replace 'bep_column' with your actual column name for BEP data
+        'bepAddress' => $user->usdtBep20,
+         // Replace 'bep_column' with your actual column name for BEP data
     ];
     $data=[
         'totalTeamIncome' => $totalTeamincome,
@@ -85,7 +85,9 @@ class Profile extends Controller
         'totalWithdrawalSumToday' => $totalWithdrawalSumToday,
         'userName' => $user->username,
         'walletAddress'=>$wallets,
+        'phone' => $user->phone,
         'availableBalance'=>$available_balance,
+
     ];
     return response()->json([
         'success' => true,
