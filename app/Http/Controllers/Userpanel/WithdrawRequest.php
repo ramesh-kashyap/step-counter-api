@@ -232,7 +232,7 @@ class WithdrawRequest extends Controller
 
             $user = Auth::user();
             // $balance = $user->available_balance();
-            $balance =$available_balance;
+            $balance =($user->totalInvestmentSum() + $user->users_incomes()) - ($user->totalWithdrawalSum());
     
             // Define withdrawal limits and charges
             $min_withdrawal = 100;
