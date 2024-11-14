@@ -92,6 +92,12 @@ class Profile extends Controller
     ], 200);
     
 } catch (\Exception $e) {
+    Log::error('Error fetching user info', [
+        'error_message' => $e->getMessage(),
+        'user_id' => auth()->id(),
+        'stack_trace' => $e->getTraceAsString(),
+    ]);
+
     return response()->json([
         'success' => false,
         'error' => $e->getMessage(),
