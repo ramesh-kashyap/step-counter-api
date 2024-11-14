@@ -306,7 +306,7 @@ class WithdrawRequest extends Controller
                 'user_id_fk' => $user->username,
                 
                 'amount' => $request->amount,
-                'payable_amt' => $request->amount - $request->amount * $chargeAmt / 100,
+               
                 'charge' => $request->amount * $chargeAmt / 100,
                 'account' => $account,
                 'payment_mode' => $request->paymentMode,
