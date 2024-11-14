@@ -66,7 +66,6 @@ class Profile extends Controller
     $todayTeamincome=Income::Where('user_id',$user->id)->where('remarks','Team Income')->whereDate('ttime',$today)->sum('comm');
     $totalsteps=UserStep::Where('user_id',$user->id)->sum('step');
     $todaysteps=UserStep::Where('user_id',$user->id)->whereDate('today',$today)->sum('step');
-    $available_balance=$user->available_balance();
 
     $available_balance = ($user->totalInvestmentSum() + $user->users_incomes()) - ($user->totalWithdrawalSum());
     $wallets =[
