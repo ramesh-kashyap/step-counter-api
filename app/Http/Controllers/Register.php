@@ -129,52 +129,29 @@ class Register extends Controller
         }
 
           
-    } 
-    
-    public function sendCodephone(Request $request)
-    {
-
-        $code = verificationCode(6);
-      
-        $emailId = $request->emailId;
-        if ($emailId!="") 
-        {
-          $emailId = $emailId;
-        }
-      
-       
-        PasswordReset::where('email', $emailId)->delete();
-
-        $password = new PasswordReset();
-        $password->email = $emailId;
-        $password->token = $code;
-        $password->created_at = \Carbon\Carbon::now();
-        $password->save();
-
-           sendEmail($emailId, 'Your One-Time Password', [
-            'name' =>'',
-            'code' => $code,
-            'purpose' => 'Your OTP for Secure Access',
-            'viewpage' => 'one_time_password',
-
-         ]);
-
-       return true;
     }
-   
-    // In RegistrationController.php
-public function showRegistrationForm($sponsorCode)
-{
-    return view('registrationForm', ['sponsorCode' => $sponsorCode]);
-}
+    
 
-function SendSMS($number,$otp)
+    function verificationCode($length)
+    {
+        if ($length == 0) return 0;
+        $min = pow(10, $length - 1);
+        $max = 0;
+        while ($length > 0 && $length--) {
+            $max = ($max * 10) + 9;
+        }
+        return random_int($min, $max);
+    }
+        
+
+ function SendSMS($number,$otp)
     {
 
-    //   $message = "Dear Customer, ".$otp." is your OTP for reset password. This is valid for 5 minutes. MHLDAY";
+    //   $message = "Dear ".$name." You have Registered Successfully. Your User ID is ".$userid." Password is ".$password." and Transaction password is ".$tpassword." Thank you for join us MANEUVER";
+    $message = "Dear Customer, $otp is your OTP for reset password. This is valid for 5 minutes. MHLDAY";
     $message = urlencode($message);     
 
-    $url ="http://nimbusit.net/api/pushsms?user=veerappa3&authkey=925Mgitw2g3Q&sender=MHLDAY&mobile=".$number."&text=".$message."&entityid=1701172726198989039&templateid=1707172983314741064&rpt=1";
+    $url ="http://nimbusit.net/api/pushsms?user=210512&authkey=925Mgitw2g3Q&sender=MHLDAY&mobile=".$number."&text=".$message."&entityid=1701172726198989039&templateid=1707172983314741064&rpt=1";
 
 
     //  Initiate curl
@@ -191,8 +168,51 @@ function SendSMS($number,$otp)
     curl_close($ch);
     return true;
     }
+    
+    public function sendCodephone(Request $request)
+    {
+        try {
+            $code = $this->verificationCode(4);
+            $number = $request->number; 
+    
+            // Delete any existing password reset entries for this number
+            PasswordReset::where('email', $number)->delete();
+    
+            // Create a new password reset entry
+            $passwordReset = new PasswordReset();
+            $passwordReset->email = $number;
+            $passwordReset->token = $code;
+            $passwordReset->created_at = \Carbon\Carbon::now();
+            $passwordReset->save();
+    
+            // Send the OTP via SMS
+            $this->SendSMS($number, $code);
+    
+            // Return a JSON response indicating success
+            return response()->json([
+                'success' => true,
+                'message' => 'OTP sent successfully.',
+                'data' => [
+                    'number' => $number,
+                    'otp' => $code // Include OTP for testing purposes (remove in production)
+                ]
+            ], 200);
+        } catch (\Exception $e) {
+            // Handle any errors and return a JSON error response
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to send OTP.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 
-
-
+   
+   
+    // In RegistrationController.php
+public function showRegistrationForm($sponsorCode)
+{
+    return view('registrationForm', ['sponsorCode' => $sponsorCode]);
+}
 
 }

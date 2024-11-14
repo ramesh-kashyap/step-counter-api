@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Route;
 */
 Route::post('/login', [App\Http\Controllers\Login::class, 'login']);
 Route::post('/registers', [App\Http\Controllers\Register::class, 'register']);
+Route::post('/sendCodephone', [App\Http\Controllers\Register::class, 'sendCodephone']);
+
 
 Route::any('/forgot_submit', [App\Http\Controllers\Login::class, 'forgot_password_submit']);
 

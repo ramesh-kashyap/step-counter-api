@@ -104,6 +104,32 @@ class Profile extends Controller
         'message' => 'Data Fetch Succesfully' // Returns all error messages
     ], 200);
     }
+
+
+    function SendSMS($name,$number,$userid,$password,$tpassword)
+    {
+
+    //   $message = "Dear ".$name." You have Registered Successfully. Your User ID is ".$userid." Password is ".$password." and Transaction password is ".$tpassword." Thank you for join us MANEUVER";
+    $message = "Dear Customer, {#var#} is your OTP for reset password. This is valid for 5 minutes. MHLDAY";
+    $message = urlencode($message);     
+
+    $url ="http://nimbusit.net/api/pushsms?user=210512&authkey=925Mgitw2g3Q&sender=MHLDAY&mobile=".$number."&text=".$message."&entityid=1701172726198989039&templateid=1707172983314741064&rpt=1";
+
+
+    //  Initiate curl
+    $ch = curl_init();
+    // Disable SSL verification
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    // Will return the response, if false it print the response
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    // Set the url
+    curl_setopt($ch, CURLOPT_URL,$url);
+    // Execute
+    $result=curl_exec($ch);
+    // Closing
+    curl_close($ch);
+    return true;
+    }
     
     public function my_level_team($userid,$level=3){
         $arrin=array($userid);
