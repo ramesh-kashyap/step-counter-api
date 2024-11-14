@@ -307,7 +307,7 @@ class WithdrawRequest extends Controller
                 
                 'amount' => $request->amount,
                
-                'charge' => $request->amount * $chargeAmt / 100,
+                
                 'account' => $account,
                 'payment_mode' => $request->paymentMode,
                 'status' => 'Pending',
