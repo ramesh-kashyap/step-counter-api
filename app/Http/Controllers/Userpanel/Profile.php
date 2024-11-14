@@ -54,6 +54,7 @@ class Profile extends Controller
     }
     public function user_info()
     {
+        try {
     $user=Auth::user();
     
     $totalSum = $user->totalInvestmentSum(); //amount:55
@@ -90,7 +91,12 @@ class Profile extends Controller
         'message' => 'Data Submited' // Returns all error messages
     ], 200);
     
-    
+} catch (\Exception $e) {
+    return response()->json([
+        'success' => false,
+        'error' => $e->getMessage(),
+    ], 400);
+}
 
 
     }
