@@ -143,11 +143,7 @@ class User extends Authenticatable
     
     
     
-    public function available_balance()
-    {
-    $balance = ($this->totalInvestmentSum()+Auth::user()->users_incomes()) - ($this->totalWithdrawalSum());
-    return $balance;
-    } 
+   
 
     public function principleBalance()
     {
@@ -212,7 +208,11 @@ class User extends Authenticatable
                     ->where('status', 'Approved') // Filters by today's date
                     ->sum('amount'); // Sum the 'amount' of today's withdrawals
     }
-
+    public function available_balance()
+    {
+    $balance = ($this->totalInvestmentSum()+Auth::user()->users_incomes()) - ($this->totalWithdrawalSum());
+    return $balance;
+    } 
   public function Priciplewithdrawal(){
         return $this->hasMany('App\Models\Withdraw','user_id','id')->where('walletType',2);
     }
