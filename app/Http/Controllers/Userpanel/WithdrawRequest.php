@@ -212,10 +212,10 @@ class WithdrawRequest extends Controller
 
             // Validation
             $validation = Validator::make($request->all(), [
-                'amount' => 'required|numeric|min:25',
+                'amount' => 'required|numeric|min:100',
                 'paymentMode' => 'required',
                 'walletAddress' => 'required',
-                'transaction_password' => 'required',
+                
             ]);
 
 
@@ -232,11 +232,11 @@ class WithdrawRequest extends Controller
 
             $user = Auth::user();
             // $balance = $user->available_balance();
-            $balance = 1000;
+            $balance =$available_balance;
     
             // Define withdrawal limits and charges
-            $min_withdrawal = 10;
-            $chargeAmt = 5;
+            $min_withdrawal = 100;
+            
     
             if ($request->amount < $min_withdrawal) {
                 // return Redirect::back()->withErrors(['Minimum withdrawal is ' . $min_withdrawal]);
@@ -274,13 +274,13 @@ class WithdrawRequest extends Controller
                
                  $hashedTransactionPassword = '$2y$10$NEVsc/2.08VjOXJwNzYy4.P1JQZ12TdMoACWJplC/R9bLWbH6Zvpu';
             // Transaction password check
-            if (!Hash::check($request->transaction_password,$hashedTransactionPassword)) {
-                // return Redirect::back()->withErrors(['Invalid Transaction Password']);
-                return response()->json([
-                  'success' => false,
-                  'errors' => 'Invalid Transaction Password' // Returns all error messages
-              ], 422);
-            }
+            // if (!Hash::check($request->transaction_password,$hashedTransactionPassword)) {
+            //     // return Redirect::back()->withErrors(['Invalid Transaction Password']);
+            //     return response()->json([
+            //       'success' => false,
+            //       'errors' => 'Invalid Transaction Password' // Returns all error messages
+            //   ], 422);
+            // }
     
             if ($balance < $request->amount) {
                 // return Redirect::back()->withErrors(['Insufficient balance in your account']);
