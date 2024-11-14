@@ -33,8 +33,8 @@ Route::post('/checkPaymentStatus', [App\Http\Controllers\UserPanel\Dashboard::cl
 Route::any('/dynamicupicallback', [App\Http\Controllers\Cron::class, 'dynamicupicallback']);
 Route::get( '/levelTeam', [App\Http\Controllers\UserPanel\Team::class, 'LevelTeam']);
 Route::post('/edit-number', [App\Http\Controllers\UserPanel\Profile::class, 'change_number']);
-    Route::get('/transactionHistory', [App\Http\Controllers\UserPanel\AddFund::class, 'index']);
-    Route::any('/confirmDeposit', [App\Http\Controllers\UserPanel\Invest::class, 'confirmDeposit']);
+Route::get('/transactionHistory', [App\Http\Controllers\UserPanel\AddFund::class, 'index']);
+Route::any('/confirmDeposit', [App\Http\Controllers\UserPanel\Invest::class, 'confirmDeposit']);
 Route::post('/WithdrawRequest', [App\Http\Controllers\UserPanel\WithdrawRequest::class, 'WithdrawRequest']);
 Route::post('/edit-password', [App\Http\Controllers\UserPanel\Profile::class, 'change_password_post']);
 Route::post('/Step', [App\Http\Controllers\UserPanel\stepCount::class, 'step_count']);
