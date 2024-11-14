@@ -145,7 +145,7 @@ class User extends Authenticatable
     
     public function available_balance()
     {
-    $balance = (Auth::user()->buy_fundAmt->sum('amount')+Auth::user()->users_incomes()) - (Auth::user()->withdraw()+Auth::user()->buy_packageAmt());
+    $balance = (Auth::user()->totalInvestmentSum()+Auth::user()->users_incomes()) - (Auth::user()->totalWithdrawalSum());
     return $balance;
     } 
 
@@ -163,7 +163,7 @@ class User extends Authenticatable
 
     public function users_incomes()
     {
-        return  Income::where('user_id',Auth::user()->id)->where('credit_type',0)->sum('comm');
+        return  Income::where('user_id',Auth::user()->id)->sum('comm');
     } 
     
 
