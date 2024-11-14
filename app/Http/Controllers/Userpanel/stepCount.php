@@ -43,8 +43,11 @@ class stepCount extends Controller
             ->value('today');   
             $match_date_formatted = Carbon::parse($match_date)->format('Y-m-d'); // Converts to "12-11-2024"
 
+            $today_steps=DB::table('user_steps')->where('user_id',$user->id)->where('today',$check_date)->first();
+
+
                 //    dd(  $check_date===$match_date_formatted);
-                 if($check_date===$match_date_formatted){
+                 if($today_steps){
                  
                     $data = [
                      
@@ -73,7 +76,7 @@ class stepCount extends Controller
                 
                 'message' => 'data save Successfully.' // Returns all error messages
             ], 200);}
-    }
+ }
        
 
         public function step_history(){

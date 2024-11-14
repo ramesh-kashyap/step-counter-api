@@ -59,10 +59,10 @@ class Team extends Controller
       $user=Auth::user();
       // print_r($user->username);die();
     //   $ids=$this->my_level_team_count( 1);
-      $ids=$this->my_level_team(1);
+      $ids=$this->my_level_team($user->id);
       $gen_teams = [];
       $level = 1;
-      $count =$this->my_level_team_count(1);
+      $count =$this->my_level_team_count($user->id);
       // Loop through each level indefinitely until there's no data for the level
      
     //   foreach ($gen_teams as $level => $team) {
