@@ -86,6 +86,8 @@ class Profile extends Controller
         'userName' => $user->username,
         'walletAddress'=>$wallets,
         'phone' => $user->phone,
+        'email' => $user->email,
+        'name' => $user->name,
         'availableBalance'=>$available_balance,
 
     ];
