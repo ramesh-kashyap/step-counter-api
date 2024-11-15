@@ -119,7 +119,7 @@ class Profile extends Controller
     $user=Auth::user();
    
 
-    $incomeReport=Income::where('user_id',$user->id)->select('ttime','amt','comm','remarks')->orderBy('ttime', 'desc')->get();
+    $incomeReport=Income::where('user_id',$user->id)->select('created_at','amt','comm','remarks')->orderBy('ttime', 'desc')->get();
     
     return response()->json([
         'success' => true,
