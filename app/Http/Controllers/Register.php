@@ -215,4 +215,57 @@ public function showRegistrationForm($sponsorCode)
     return view('registrationForm', ['sponsorCode' => $sponsorCode]);
 }
 
+public function update_profile(Request $request)
+{
+    try {
+        // Validate input fields
+        $validation = Validator::make($request->all(), [
+            'code' => 'required', // Only code is required
+            'email' => 'nullable|email', // If email is provided, validate it
+        ]);
+
+        // Check if validation fails
+        if ($validation->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validation->errors()->first() // Returns the first error message
+            ], 422);
+        }
+
+        // Check if the provided code is valid
+        $code = $request->code;
+        if (PasswordReset::where('token', $code)->where('email', Auth::user()->phone)->count() != 1) {
+            return response()->json([
+                'success' => false,
+                'errors' => 'Invalid token'
+            ], 422);
+        }
+
+        // Update user data
+        $user = Auth::user(); // Get the authenticated user
+        $user->usdtBep20 = $request->input('bep', $user->bep); // Update if provided, keep current value if not
+        $user->usdtTrc20 = $request->input('trc', $user->trc);
+        $user->name = $request->input('name', $user->name);
+        if ($request->filled('email')) {
+            $user->email = $request->input('email'); // Only update email if provided
+        }
+        
+        $user->save(); // Save changes to the user
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Profile updated successfully'
+        ], 200);
+    } catch (\Exception $e) {
+        // Log and return error message
+        Log::error('Profile update error: ' . $e->getMessage());
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage(),
+            'input' => $request->all() // Optionally include the input data
+        ], 400);
+    }
+}
+
+
 }
