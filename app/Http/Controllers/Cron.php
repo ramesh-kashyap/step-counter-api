@@ -541,8 +541,124 @@ public function add_level_income($user_id, $bonus, $plan_id)
     return true;
 }
 
+public function countDirectTeamMembers($user_id)
+{
+    $user = User::find($user_id);
+
+    if (!$user) {
+        return 0; // Return 0 if user not found
+    }
+
+    // Count the users where the sponsor is the given user
+    $directTeamCount = User::where('sponsor', $user_id)->count();
+
+    return $directTeamCount;
+}
   
-  
+public function add_level_income1($user_id, $plan_id)
+{
+    $plan = Plan::find($plan_id);
+    
+    if (!$plan) {
+        return false; // Skip if plan not found
+    }
+
+    // Level percentages
+    $levelPercentages = [
+        1 => 15,  // 1st level: 15%
+        2 => 10,  // 2nd level: 10%
+        3 => 5,   // 3rd level: 5%
+        4 => 2,   // 4th level: 2%
+        5 => 1,   // 5th level: 1%
+    ];
+
+    // Levels 6 to 10: 0.5%
+    for ($i = 6; $i <= 10; $i++) {
+        $levelPercentages[$i] = 0.5;
+    }
+
+    // Levels 11 to 20: 0.25%
+    for ($i = 11; $i <= 20; $i++) {
+        $levelPercentages[$i] = 0.25;
+    }
+
+    $user = User::find($user_id);
+    if (!$user) {
+        return false; // Skip if user not found
+    }
+
+    $fullname = $user->name;
+    $rname = $user->username;
+
+    $currentUserId = $user_id; // Start from the initial user
+    $cnt = 1; // Level counter
+
+    while ($currentUserId && $currentUserId != "1" && $cnt <= 20) {
+        $sponsorData = User::where('id', $currentUserId)->first();
+
+        if (!$sponsorData) {
+            break; // Break if no sponsor is found
+        }
+
+        // Get all direct team members of the sponsor
+        $teamMembers = User::where('sponsor', $sponsorData->id)->get();
+
+        // Process income distribution for each team member
+        foreach ($teamMembers as $teamMember) {
+            $teamCount = $sponsorData->direct_team_count ?? 0; // Assume a field direct_team_count exists
+            $sp_status = $sponsorData->active_status ?? "Pending";
+
+            $pp = 0;
+
+            // Calculate total earnings of the sponsor
+            $totalEarnings = Income::where('user_id', $sponsorData->id)->sum('comm'); // Assume comm column stores earnings
+            $investedAmount = $teamMember->invested_amount ?? 0; // Get the investment of the team member
+            $dividedInvestment = $investedAmount / 30; // Divide investment by 30
+            $maxPayout = ($sponsorData->invested_amount ?? 0) * 3; // Maximum payout: 3x sponsor's investment
+
+            // Check eligibility and calculate commission
+            if ($sp_status == "Active" && $totalEarnings < $maxPayout) {
+                if ($cnt == 1 && $teamCount >= 3) {
+                    $pp = ($dividedInvestment * $levelPercentages[1]) / 100;
+                } elseif ($cnt == 2 && $teamCount >= 3) {
+                    $pp = ($dividedInvestment * $levelPercentages[2]) / 100;
+                } elseif ($cnt == 3 && $teamCount >= 2) {
+                    $pp = ($dividedInvestment * $levelPercentages[3]) / 100;
+                } elseif ($cnt >= 4 && $cnt <= 10) {
+                    $pp = ($dividedInvestment * $levelPercentages[$cnt]) / 100;
+                } elseif ($cnt >= 11 && $cnt <= 20 && $teamCount >= 5) {
+                    $pp = ($dividedInvestment * $levelPercentages[$cnt]) / 100;
+                }
+
+                // Ensure payout doesn't exceed max payout
+                if ($totalEarnings + $pp > $maxPayout) {
+                    $pp = $maxPayout - $totalEarnings;
+                }
+            }
+
+            // Save income if commission is calculated
+            if ($pp > 0) {
+                Income::create([
+                    'user_id' => $sponsorData->id,
+                    'user_id_fk' => $teamMember->username,
+                    'amt' => $dividedInvestment, // Based on divided investment
+                    'comm' => $pp,
+                    'remarks' => 'Team Commission',
+                    'level' => $cnt,
+                    'rname' => $rname,
+                    'fullname' => $fullname,
+                    'ttime' => date("Y-m-d"),
+                ]);
+            }
+        }
+
+        // Move to the next level (sponsor's sponsor)
+        $currentUserId = $sponsorData->sponsor;
+        $cnt++;
+    }
+
+    return true;
+}
 
 
  public function reward_bonus()
