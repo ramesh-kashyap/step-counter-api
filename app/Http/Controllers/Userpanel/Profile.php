@@ -88,6 +88,7 @@ class Profile extends Controller
         'phone' => $user->phone,
         'email' => $user->email,
         'name' => $user->name,
+        'uri' =>$user->remember_token,
         'availableBalance'=>$available_balance,
 
     ];
