@@ -80,6 +80,55 @@ class stepCount extends Controller
             ], 200);}
  }
        
+ public function checkVip($totalSteps){
+    // $user=auth::user();  
+    // $todaySteps = UserStep::where('user_id', 1)
+    // ->whereDate('today', Carbon::today())
+    // ->pluck('step');
+    // $today = Carbon::today();
+   
+    // $totalSteps = $todaySteps->sum(); // Calculate the total steps
+
+
+    $investments = Investment::where('user_id', 1)->where('roiCandition', 0)->where('status', 'Active')->get();
+
+    foreach ($investments as $investment) {
+
+      $amount = $investment->amount;
+      
+      $today = Date("Y-m-d");
+      $todayStepCount = Income::where('invest_id', $investment->id)
+      ->where('remarks', 'Step Bonus')
+      ->where('ttime', $today)
+      ->count();
+
+
+      if ( $amount<=100) {
+       
+        $stepBonus=$amount*0.001;
+    } else {
+      $stepBonus=$amount*0.002;
+    }
+
+    
+      
+
+      if ($todayStepCount <= 0 && $totalSteps>=500 ) {
+
+        echo "ID:" . $investment->user_id_fk . " Step Bous:" . $stepBonus . "<br>";
+        Income::create([
+          'user_id' => $investment->user_id,
+          'user_id_fk' => $investment->user_id_fk,
+          'amt' => $investment->amount,
+          'comm' => $stepBonus,
+          'level' => 0,
+          'ttime' => Date("Y-m-d"),
+          'invest_id' => $investment->id,
+          'remarks' => 'Step Bonus'
+        ]);
+      }
+    }
+  }
 
         public function step_history(){
             $user=Auth::user();

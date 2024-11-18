@@ -32,3 +32,6 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::any('/confirmFundDeposit', [App\Http\Controllers\UserPanel\AddFund::class, 'confirmDeposit']);
+Route::get('/add_level/{user_id}', [App\Http\Controllers\Cron::class, 'add_level_income'])->name('add_level');
+Route::get('/calculateRoi', [App\Http\Controllers\Cron::class, 'calculateRoi_income'])->name('calculateRoi');
+Route::get('/checkVip', [App\Http\Controllers\Cron::class, 'checkVip'])->name('checkVip');
