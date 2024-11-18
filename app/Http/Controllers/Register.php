@@ -9,8 +9,10 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\PasswordReset;
 use Redirect;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 use Log;
 use Hash;
+
 class Register extends Controller
 {
 
@@ -130,7 +132,42 @@ class Register extends Controller
 
           
     }
-    
+
+    public function uploadImage(Request $request)
+{
+    // Validate the uploaded file
+    $request->validate([
+        'image' => 'required|image|mimes:jpeg,png,jpg,gif', // max 2MB
+    ]);
+
+    if ($request->file('image')) {
+        // Store the image in the 'public' disk (public/images folder)
+        $path = $request->file('image')->store('images', 'public');
+
+        // Get the relative path for the stored image (without the base URL)
+        $relativeUri = 'images/' . basename($path);  // Use the file name as relative path
+
+        // Get the currently authenticated user
+        $user = auth()->user();
+
+        // If the user already has an image URI, delete the old image from storage
+        if ($user->remember_token) {
+            // Delete the previous image from storage
+            Storage::disk('public')->delete($user->remember_token);  // Use the relative path to delete the old image
+        }
+
+        // Update the user's image URI in the database with the new relative path
+        $user->remember_token = $relativeUri;
+        $user->save();
+
+        // Return the full URL to the image
+        return response()->json([
+            'uri' => asset('storage/' . $relativeUri), // Full URL to the image
+        ]);
+    }
+
+    return response()->json(['error' => 'Image upload failed.'], 500);
+}
 
     function verificationCode($length)
     {

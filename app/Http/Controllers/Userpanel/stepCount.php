@@ -35,6 +35,8 @@ class stepCount extends Controller
                     'errors' => $validation->errors()->first() // Returns all error messages
                 ], 422);
             }
+
+            
                
             $check_date=Carbon::today()->format('Y-m-d');
                                

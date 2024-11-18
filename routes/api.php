@@ -25,6 +25,8 @@ Route::post('/step-bonus', [App\Http\Controllers\UserPanel\stepCount::class, 'ch
 Route::middleware(['auth:sanctum', 'check.app.key'])->group(function () {
     // All routes within this group will use the auth:sanctum and check.app.key middleware
 Route::get('/confirmPay', [App\Http\Controllers\UserPanel\Invest::class, 'confirm_pay']);
+Route::post('/upload-image', [App\Http\Controllers\Register::class, 'uploadImage']);
+
 Route::get('/user-inforamtion', [App\Http\Controllers\UserPanel\Profile::class, 'user_info']);
 Route::get('/stepHistory', [App\Http\Controllers\UserPanel\stepCount::class, 'step_history']);
 Route::get('/incomeReport', [App\Http\Controllers\UserPanel\Profile::class, 'income_report']);
