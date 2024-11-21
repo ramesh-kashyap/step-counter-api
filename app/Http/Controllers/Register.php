@@ -268,7 +268,7 @@ public function update_profile(Request $request)
 
         // Check if the provided code is valid
         $code = $request->code;
-        if (PasswordReset::where('token', $code)->where('email', Auth::user()->phone)->count() != 1) {
+        if (PasswordReset::where('token', $code)->where('email', Auth::user()->email)->count() != 1) {
             return response()->json([
                 'success' => false,
                 'errors' => 'Invalid token'
