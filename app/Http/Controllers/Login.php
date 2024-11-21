@@ -43,7 +43,7 @@ class Login extends Controller
         Log::info(message: "hi");
       
             $validation =  Validator::make($request->all(), [
-                'phone' => 'required',
+                'email' => 'required|email',
                 'password' => 'required|numeric',
 
             ]);
@@ -62,7 +62,7 @@ class Login extends Controller
         
             
             $post_array  = $request->all();
-            $credentials = $request->only('phone', 'password');
+            $credentials = $request->only('email', 'password');
            
             // dd($request->all());
            if (Auth::attempt($credentials)) {
