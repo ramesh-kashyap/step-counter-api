@@ -25,12 +25,13 @@ class Register extends Controller
     {
         try{
             $validation =  Validator::make($request->all(), [
-                'phone' => 'required|unique:users,phone',
+                'email' => 'required|unique:users,email',
                 'password' => 'required|numeric',
                 'sponsor' => 'required|exists:users,username',
                 'code' => 'required',              
             ]);
-
+                 
+            
             
             if($validation->fails()) {
 
@@ -45,7 +46,7 @@ class Register extends Controller
             //check if email exist
           
             $code = $request->code;
-            if (PasswordReset::where('token', $code)->where('email', $request->phone)->count() != 1) {
+            if (PasswordReset::where('token', $code)->where('email', $request->email)->count() != 1) {
                 // $notify[] = ['error', 'Invalid token'];
                 // return Redirect::back()->withNotify($notify);
                 return response()->json([
@@ -71,16 +72,17 @@ class Register extends Controller
             
            $tpassword =substr(time(),-2).substr(rand(),-2).substr(mt_rand(),-1);
             $post_array  = $request->all();
-                //  
+                dd();
             // $data['name'] = $post_array['name'];
-            $data['phone'] = $post_array['phone'];
-          
+            // $data['phone'] = $post_array['phone'];
+           
+            
             $data['username'] = $username;
             $data['password'] =   Hash::make($post_array['password']);
             $data['tpassword'] =   Hash::make($tpassword);
             $data['TPSR'] =  $tpassword;
             $data['PSR'] =  $post_array['password'];
-
+            $data['email'] = $post_array['email'];
             $data['sponsor'] = $user->id;
             $data['package'] = 0;
             $data['jdate'] = date('Y-m-d');
@@ -92,6 +94,7 @@ class Register extends Controller
          
             $data['ParentId'] =  $sponsor_user->id;
             $user_data =  User::create($data);
+           
             $registered_user_id = $user_data['id'];
             $user = User::find($registered_user_id);
             Auth::loginUsingId($registered_user_id);
@@ -121,12 +124,7 @@ class Register extends Controller
 
       
             // return back()->withErrors('error', $e->getMessage())->withInput();
-            return response()->json([
-                'success' => false,
-        
-                'error' => $e->getMessage(),
-                'input' => $request->all() // Optionally include the input data
-            ], 400);
+           
            
         }
 
@@ -210,27 +208,27 @@ class Register extends Controller
     {
         try {
             $code = $this->verificationCode(4);
-            $number = $request->number; 
+            $email = $request->email; 
     
             // Delete any existing password reset entries for this number
-            PasswordReset::where('email', $number)->delete();
+            PasswordReset::where('email', $email)->delete();
     
             // Create a new password reset entry
             $passwordReset = new PasswordReset();
-            $passwordReset->email = $number;
+            $passwordReset->email = $email;
             $passwordReset->token = $code;
             $passwordReset->created_at = \Carbon\Carbon::now();
             $passwordReset->save();
     
             // Send the OTP via SMS
-            $this->SendSMS($number, $code);
+            $this->SendSMS($email, $code);
     
             // Return a JSON response indicating success
             return response()->json([
                 'success' => true,
                 'message' => 'OTP sent successfully.',
                 'data' => [
-                    'number' => $number,
+                    'email' => $email,
                     'otp' => $code // Include OTP for testing purposes (remove in production)
                 ]
             ], 200);
