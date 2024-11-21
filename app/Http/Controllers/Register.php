@@ -72,7 +72,7 @@ class Register extends Controller
             
            $tpassword =substr(time(),-2).substr(rand(),-2).substr(mt_rand(),-1);
             $post_array  = $request->all();
-                dd();
+             
             // $data['name'] = $post_array['name'];
             // $data['phone'] = $post_array['phone'];
            
@@ -97,7 +97,6 @@ class Register extends Controller
            
             $registered_user_id = $user_data['id'];
             $user = User::find($registered_user_id);
-            Auth::loginUsingId($registered_user_id);
           
         //    sendEmail($user->email, 'Welcome to '.siteName(), [
         //         'name' => $user->name,
@@ -120,7 +119,7 @@ class Register extends Controller
             Log::info('error here');
             Log::info($e->getMessage());
             print_r($e->getMessage());
-            die('hi');
+            die('hi'); 
 
       
             // return back()->withErrors('error', $e->getMessage())->withInput();
