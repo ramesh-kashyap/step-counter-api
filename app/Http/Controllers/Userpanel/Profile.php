@@ -90,6 +90,7 @@ class Profile extends Controller
         'name' => $user->name,
         'uri' => asset('storage/' . $user->remember_token),
         'availableBalance'=>$available_balance,
+        'jdate'=>$user->jdate,
 
     ];
     return response()->json([
